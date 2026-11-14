@@ -47,10 +47,13 @@ class AppBottomNavBar extends StatelessWidget {
           height: 56,
           child: Row(
             children: List.generate(items.length, (i) {
+              final bool isFriendTabOffline = (i == 1 && currentIndex == 0);
+
               return Expanded(
                 child: _NavBarButton(
                   item: items[i],
                   isActive: i == currentIndex,
+                  overrideIcon: isFriendTabOffline ? Icons.person_outline_rounded : null,
                   activeColor: activeColor,
                   inactiveColor: inactiveColor,
                   onTap: () => onTap(i),
@@ -67,6 +70,7 @@ class AppBottomNavBar extends StatelessWidget {
 class _NavBarButton extends StatelessWidget {
   final NavItem item;
   final bool isActive;
+  final IconData? overrideIcon;
   final Color activeColor;
   final Color inactiveColor;
   final VoidCallback onTap;
@@ -74,6 +78,7 @@ class _NavBarButton extends StatelessWidget {
   const _NavBarButton({
     required this.item,
     required this.isActive,
+    this.overrideIcon,
     required this.activeColor,
     required this.inactiveColor,
     required this.onTap,
@@ -82,6 +87,8 @@ class _NavBarButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = isActive ? activeColor : inactiveColor;
+    final displayIcon =
+        overrideIcon ?? (isActive ? item.activeIcon : item.icon);
 
     return Semantics(
       button: true,
@@ -110,7 +117,6 @@ class _NavBarButton extends StatelessWidget {
                 ),
               ),
             ),
-
             Stack(
               clipBehavior: Clip.none,
               children: [
@@ -119,8 +125,8 @@ class _NavBarButton extends StatelessWidget {
                   transitionBuilder: (child, anim) =>
                       ScaleTransition(scale: anim, child: child),
                   child: Icon(
-                    isActive ? item.activeIcon : item.icon,
-                    key: ValueKey(isActive),
+                    displayIcon,
+                    key: ValueKey(displayIcon),
                     size: 27,
                     color: color,
                   ),

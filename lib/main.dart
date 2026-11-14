@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
+import 'component/navbarAnim.dart';
+
 void main() {
   runApp(const DemoApp());
 }
@@ -30,16 +32,14 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _index = 0;
 
-  // Badge counts would normally come from your state management / backend.
   final int _friendRequests = 3;
   final int _notifications = 12;
 
-  // Replace these placeholders with your teammates' real screens.
   final List<Widget> _pages = const [
     Center(child: Text('Home feed')),
     Center(child: Text('Friends')),
-    Center(child: Text('Watch')),
-    Center(child: Text('Notifications')),
+    Center(child: Text('Search')),
+    Center(child: Text('Reels')),
     Center(child: Text('Menu / Settings')),
   ];
 
@@ -58,30 +58,33 @@ class _MainShellState extends State<MainShell> {
         badgeCount: _friendRequests,
       ),
       const NavItem(
-        icon: Icons.ondemand_video_outlined,
-        activeIcon: Icons.ondemand_video_rounded,
-        label: 'Watch',
+        icon: Icons.search_outlined,
+        activeIcon: Icons.search_rounded,
+        label: 'Search',
       ),
       NavItem(
-        icon: Icons.notifications_none_rounded,
-        activeIcon: Icons.notifications_rounded,
-        label: 'Notifications',
-        badgeCount: _notifications,
+        icon: Icons.movie_outlined,
+        activeIcon: Icons.movie_rounded,
+        label: 'Reels',
       ),
       const NavItem(
-        icon: Icons.menu_rounded,
-        activeIcon: Icons.menu_open_rounded,
+        icon: Icons.person_outline_rounded,
+        activeIcon: Icons.person_rounded,
         label: 'Menu',
       ),
     ];
 
     return Scaffold(
-      // IndexedStack keeps each tab's scroll position when you switch tabs.
       body: IndexedStack(index: _index, children: _pages),
-      bottomNavigationBar: AppBottomNavBar(
+      // Wrap your navbar with the animation overlay here:
+      bottomNavigationBar: AnimatedNavTransitionOverlay(
         currentIndex: _index,
-        items: items,
-        onTap: (i) => setState(() => _index = i),
+        itemCount: items.length,
+        child: AppBottomNavBar(
+          currentIndex: _index,
+          items: items,
+          onTap: (i) => setState(() => _index = i),
+        ),
       ),
     );
   }
