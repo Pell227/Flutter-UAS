@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import '../widgets/storybar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,15 +48,29 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       // Konten utama
-      body: const Center(
+      body: Column(
+  children: [
+    const Storybar(),
+
+    const Divider(
+      height: 1,
+      thickness: 0.5,
+      color: Color(0xFFEEEEEE),
+    ),
+
+    const Expanded(
+      child: Center(
         child: Text(
-          'Welcome to Facebook!',
+          'Your Feed Will Appear Here',
           style: TextStyle(
-            fontSize: 18,
-            color: Colors.black54,
+            color: Colors.grey,
+            fontSize: 14,
           ),
         ),
       ),
+    ),
+  ],
+),
 
       // Navigasi bawah
       bottomNavigationBar: BottomNavigationBar(
