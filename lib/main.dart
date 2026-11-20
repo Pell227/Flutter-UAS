@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_screen.dart'; 
 
 import 'navbar.dart';
 import 'component/navbarAnim.dart';
@@ -14,6 +15,16 @@ class DemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'SocialApp',
+      debugShowCheckedModeBanner: false, 
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      home: const LoginScreen(), 
+    );
+  }
+}
       debugShowCheckedModeBanner: false,
       title: 'Profile App',
       theme: ThemeData(
