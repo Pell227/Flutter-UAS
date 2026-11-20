@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AnimatedNavTransitionOverlay extends StatefulWidget {
   final int currentIndex;
   final int itemCount;
-  final Widget child; 
+  final Widget child;
 
   const AnimatedNavTransitionOverlay({
     super.key,
@@ -81,9 +81,6 @@ class _AnimatedNavTransitionOverlayState
                   begin: homeCenterX - 12,
                   end: friendCenterX - 12,
                 ).evaluate(_slideAnimation);
-
-                // final double verticalArc =
-                //     -20.0 * (1.0 - (2.0 * (_slideAnimation.value - 0.5)).abs());
 
                 return Positioned(
                   left: currentX,
