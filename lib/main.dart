@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart'; 
 
+import 'login_screen.dart';
 import 'navbar.dart';
 import 'component/navbarAnim.dart';
 import 'profile.dart';
@@ -16,22 +16,14 @@ class DemoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SocialApp',
-      debugShowCheckedModeBanner: false, 
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: const LoginScreen(), 
-    );
-  }
-}
       debugShowCheckedModeBanner: false,
-      title: 'Profile App',
       theme: ThemeData(
         colorSchemeSeed: const Color(0xFF1877F2),
         useMaterial3: true,
+        scaffoldBackgroundColor: Colors.white,
       ),
-      home: const MainShell(),
+      home: const LoginScreen(),
+      routes: {'/home': (context) => const MainShell()},
     );
   }
 }
