@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'navbar.dart';
 import 'component/navbarAnim.dart';
-
 import 'profile.dart';
 
 void main() {
@@ -13,14 +13,9 @@ class DemoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Profile App',
-      home: ProfileScreen(),
-  @override
-  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'Profile App',
       theme: ThemeData(
         colorSchemeSeed: const Color(0xFF1877F2),
         useMaterial3: true,
@@ -48,7 +43,7 @@ class _MainShellState extends State<MainShell> {
     Center(child: Text('Friends')),
     Center(child: Text('Search')),
     Center(child: Text('Reels')),
-    Center(child: Text('Menu / Settings')),
+    ProfileScreen(),
   ];
 
   @override
@@ -70,21 +65,21 @@ class _MainShellState extends State<MainShell> {
         activeIcon: Icons.search_rounded,
         label: 'Search',
       ),
-      NavItem(
+      const NavItem(
         icon: Icons.movie_outlined,
         activeIcon: Icons.movie_rounded,
         label: 'Reels',
       ),
-      const NavItem(
+      NavItem(
         icon: Icons.person_outline_rounded,
         activeIcon: Icons.person_rounded,
         label: 'Menu',
+        badgeCount: _notifications,
       ),
     ];
 
     return Scaffold(
       body: IndexedStack(index: _index, children: _pages),
-      // Wrap your navbar with the animation overlay here:
       bottomNavigationBar: AnimatedNavTransitionOverlay(
         currentIndex: _index,
         itemCount: items.length,
