@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'navbar.dart';
 import 'component/navbarAnim.dart';
 
+import 'profile.dart';
+
 void main() {
   runApp(const DemoApp());
 }
@@ -9,6 +11,12 @@ void main() {
 class DemoApp extends StatelessWidget {
   const DemoApp({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Profile App',
+      home: ProfileScreen(),
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
