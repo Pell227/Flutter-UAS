@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'birthday_picker.dart'; 
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,6 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
+  DateTime? _selectedBirthday; 
 
   @override
   void dispose() {
@@ -28,6 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _handleRegister() {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
+      debugPrint('Tanggal lahir dipilih: $_selectedBirthday');
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           setState(() => _isLoading = false);
@@ -117,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     'SocialApp',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: 'Billabong', 
+                      fontFamily: 'Billabong',
                       fontSize: 42,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
@@ -125,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   Text(
                     'Daftar untuk melihat foto dan video dari temanmu.',
                     textAlign: TextAlign.center,
@@ -155,7 +158,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hintText: 'Kata Sandi',
                     isPassword: true,
                   ),
-                  
+
+                  // 3. Panggil komponen BirthdayPicker di sini
+                  BirthdayPicker(
+                    onDateSelected: (date) {
+                      setState(() {
+                        _selectedBirthday = date;
+                      });
+                    },
+                  ),
+
                   const SizedBox(height: 16),
 
                   ElevatedButton(
@@ -186,9 +198,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                   ),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
