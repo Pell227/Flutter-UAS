@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'register_screen.dart';
+import 'forgot_password.dart';
+import 'social_login.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,6 +38,12 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       });
     }
+  }
+
+  void _handleSocialLogin(String provider) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Melanjutkan login dengan $provider...')),
+    );
   }
 
   @override
@@ -153,14 +162,36 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
+
+                  // Tombol navigasi ke ForgotPassword
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ForgotPassword(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Lupa kata sandi?',
+                        style: TextStyle(
+                          color: Color(0xFF3797EF),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
 
                   ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                        0xFF3797EF,
-                      ), // Instagram Primary Blue
+                      backgroundColor: const Color(0xFF3797EF),
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -184,6 +215,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontSize: 14,
                             ),
                           ),
+                  ),
+
+                  const SizedBox(height: 24),
+                  
+                  SocialLogin(
+                    onGooglePressed: () => _handleSocialLogin('Google'),
+                    onFacebookPressed: () => _handleSocialLogin('Facebook'),
+                    onApplePressed: () => _handleSocialLogin('Apple'),
+                    onXPressed: () => _handleSocialLogin('X'),
                   ),
 
                   const SizedBox(height: 32),
