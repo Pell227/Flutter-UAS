@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import '../widgets/storybar.dart';
 
@@ -9,8 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,64 +48,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Konten utama
       body: Column(
-  children: [
-    const Storybar(),
+        children: [
+          const Storybar(),
 
-    const Divider(
-      height: 1,
-      thickness: 0.5,
-      color: Color(0xFFEEEEEE),
-    ),
+          const Divider(
+            height: 1,
+            thickness: 0.5,
+            color: Color(0xFFEEEEEE),
+          ),
 
-    const Expanded(
-      child: Center(
-        child: Text(
-          'Your Feed Will Appear Here',
-          style: TextStyle(
-            color: Colors.grey,
-            fontSize: 14,
-          ),
-        ),
-      ),
-    ),
-  ],
-),
-
-      // Navigasi bawah
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_box_outlined),
-            label: 'Create',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.video_library_outlined),
-            label: 'Reels',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
+          const Expanded(
+            child: Center(
+              child: Text(
+                'Your Feed Will Appear Here',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
+            ),
           ),
         ],
       ),

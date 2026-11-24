@@ -18,7 +18,10 @@ class Storyup extends StatefulWidget {
 class _StoryupState extends State<Storyup>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late int currentIndex;
+  late List<Map<String, dynamic>> items;
+
+  int currentStoryIndex = 0;
+  int currentIndex = 0;
 
   static const Duration storyDuration = Duration(seconds: 5);
 
@@ -26,7 +29,9 @@ class _StoryupState extends State<Storyup>
   void initState() {
     super.initState();
 
-    currentIndex = widget.initialIndex;
+    currentStoryIndex = widget.initialIndex;
+
+    _loadCurrentStory();
 
     _controller = AnimationController(
       vsync: this,
@@ -34,42 +39,140 @@ class _StoryupState extends State<Storyup>
     );
 
     _controller.addStatusListener(_onAnimationStatus);
+
     _startStory();
   }
 
+  // Mengambil daftar slide dari pengguna yang sedang dibuka.
+  void _loadCurrentStory() {
+    items = List<Map<String, dynamic>>.from(
+      widget.stories[currentStoryIndex]['items'] as List,
+    );
+
+    currentIndex = 0;
+  }
+
+  // Memulai timer Story.
   void _startStory() {
+    if (items.isEmpty) {
+      _nextUser();
+      return;
+    }
+
+    // Tandai Story pengguna ini sudah dilihat.
+    widget.stories[currentStoryIndex]['isViewed'] = true;
+
     _controller
       ..stop()
       ..reset()
       ..forward();
   }
 
+  // Otomatis lanjut ketika timer selesai.
   void _onAnimationStatus(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       _nextStory();
     }
   }
 
+  // Slide berikutnya.
   void _nextStory() {
-    if (currentIndex < widget.stories.length - 1) {
+    if (currentIndex < items.length - 1) {
       setState(() {
         currentIndex++;
       });
+
+      _startStory();
+    } else {
+      _nextUser();
+    }
+  }
+
+  // Berpindah ke pengguna berikutnya.
+  void _nextUser() {
+    if (currentStoryIndex < widget.stories.length - 1) {
+      setState(() {
+        currentStoryIndex++;
+        _loadCurrentStory();
+      });
+
       _startStory();
     } else {
       Navigator.pop(context);
     }
   }
 
+  // Slide sebelumnya.
   void _previousStory() {
     if (currentIndex > 0) {
       setState(() {
         currentIndex--;
       });
+
       _startStory();
     } else {
-      _startStory();
+      _previousUser();
     }
+  }
+
+  // Berpindah ke pengguna sebelumnya.
+  void _previousUser() {
+    if (currentStoryIndex > 0) {
+      setState(() {
+        currentStoryIndex--;
+        _loadCurrentStory();
+
+        // Mulai dari slide terakhir pengguna sebelumnya.
+        currentIndex = items.length - 1;
+      });
+
+      _startStory();
+    } else {
+      _controller
+        ..stop()
+        ..reset()
+        ..forward();
+    }
+  }
+
+  // Progress bar setiap slide.
+  Widget _buildProgressBar(int index) {
+    return Expanded(
+      child: Container(
+        height: 4,
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(
+          color: Colors.white38,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            double progress;
+
+            if (index < currentIndex) {
+              progress = 1.0;
+            } else if (index == currentIndex) {
+              progress = _controller.value;
+            } else {
+              progress = 0.0;
+            }
+
+            return Align(
+              alignment: Alignment.centerLeft,
+              child: FractionallySizedBox(
+                widthFactor: progress,
+                heightFactor: 1,
+                child: Container(
+                  color: Colors.white,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -81,20 +184,22 @@ class _StoryupState extends State<Storyup>
 
   @override
   Widget build(BuildContext context) {
-    final story = widget.stories[currentIndex];
+    final currentUser = widget.stories[currentStoryIndex];
 
-    final username = story['name'] as String;
-    final initial = story['initial'] as String;
-    final isMe = story['isMe'] as bool;
+    final username = currentUser['name'] as String;
+    final initial = currentUser['initial'] as String;
 
-    final backgroundColor = isMe
-        ? const Color(0xFF34495E)
-        : const Color(0xFF833AB4);
+    final currentStory = items[currentIndex];
+
+    final backgroundColor = currentStory['color'] as Color;
+    final storyText = currentStory['text'] as String;
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
+
+        // Tap kanan dan kiri.
         onTapUp: (details) {
           final width = MediaQuery.of(context).size.width;
 
@@ -104,18 +209,20 @@ class _StoryupState extends State<Storyup>
             _previousStory();
           }
         },
+
         child: Stack(
           children: [
-            // Background Story
+            // Background Story.
             Positioned.fill(
               child: Container(
                 color: backgroundColor,
                 child: Center(
                   child: Text(
-                    initial,
+                    storyText,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 150,
-                      color: Colors.white24,
+                      fontSize: 28,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -123,55 +230,26 @@ class _StoryupState extends State<Storyup>
               ),
             ),
 
-            // Header dan Progress Bar
+            // Header dan progress bar.
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
                 child: Column(
                   children: [
-                    // Progress bar setiap Story
+                    // Progress bar berdasarkan jumlah slide.
                     Row(
                       children: List.generate(
-                        widget.stories.length,
-                        (index) {
-                          return Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 2,
-                              ),
-                              child: AnimatedBuilder(
-                                animation: _controller,
-                                builder: (context, child) {
-                                  double progress;
-
-                                  if (index < currentIndex) {
-                                    progress = 1.0;
-                                  } else if (index == currentIndex) {
-                                    progress = _controller.value;
-                                  } else {
-                                    progress = 0.0;
-                                  }
-
-                                  return LinearProgressIndicator(
-                                    value: progress,
-                                    minHeight: 3,
-                                    backgroundColor: Colors.white38,
-                                    valueColor:
-                                        const AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        },
+                        items.length,
+                        (index) => _buildProgressBar(index),
                       ),
                     ),
 
                     const SizedBox(height: 15),
 
-                    // Header
+                    // Informasi pengguna.
                     Row(
                       children: [
                         CircleAvatar(
