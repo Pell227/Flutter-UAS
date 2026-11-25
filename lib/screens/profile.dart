@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
+import 'edit_profile.dart';
+import '../utils/share_helper.dart';
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +100,14 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const EditProfileScreen(),
+                            ),
+                          );
+                        },
                         icon: const Icon(
                           Icons.edit_outlined,
                           color: Colors.black,
@@ -113,7 +128,9 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(width: 15),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          shareProfile('Pel');
+                        },
                         icon: const Icon(
                           Icons.share_outlined,
                           color: Colors.black,
