@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'storyup.dart';
 
 class Storybar extends StatefulWidget {
@@ -79,8 +80,6 @@ class _StorybarState extends State<Storybar> {
     },
   ];
 
-  // Story yang belum dilihat ditampilkan lebih dahulu.
-  // Your Story selalu berada di posisi pertama.
   List<Map<String, dynamic>> get sortedStories {
     final result = List<Map<String, dynamic>>.from(stories);
 
@@ -99,7 +98,6 @@ class _StorybarState extends State<Storybar> {
     return result;
   }
 
-  // Membuka Story
   Future<void> openStory(
     List<Map<String, dynamic>> displayedStories,
     int index,
@@ -107,16 +105,13 @@ class _StorybarState extends State<Storybar> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Storyup(
-          stories: displayedStories,
-          initialIndex: index,
-        ),
+        builder: (context) =>
+            Storyup(stories: displayedStories, initialIndex: index),
       ),
     );
 
     if (!mounted) return;
 
-    // Refresh Storybar setelah Story ditutup.
     setState(() {});
   }
 
@@ -128,10 +123,7 @@ class _StorybarState extends State<Storybar> {
       height: 112,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 8,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         itemCount: displayedStories.length,
         itemBuilder: (context, index) {
           final story = displayedStories[index];
@@ -196,7 +188,6 @@ class _StorybarState extends State<Storybar> {
                         ),
                       ),
 
-                      // Tombol tambah untuk Your Story.
                       if (isMe)
                         Positioned(
                           right: 0,
@@ -207,10 +198,7 @@ class _StorybarState extends State<Storybar> {
                             decoration: BoxDecoration(
                               color: const Color(0xFF3797EF),
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
+                              border: Border.all(color: Colors.white, width: 2),
                             ),
                             child: const Icon(
                               Icons.add,
@@ -232,9 +220,7 @@ class _StorybarState extends State<Storybar> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 11,
-                        color: isViewed
-                            ? Colors.grey
-                            : Colors.black87,
+                        color: isViewed ? Colors.grey : Colors.black87,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
