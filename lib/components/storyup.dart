@@ -1,22 +1,16 @@
-
 import 'package:flutter/material.dart';
 
 class Storyup extends StatefulWidget {
   final List<Map<String, dynamic>> stories;
   final int initialIndex;
 
-  const Storyup({
-    super.key,
-    required this.stories,
-    required this.initialIndex,
-  });
+  const Storyup({super.key, required this.stories, required this.initialIndex});
 
   @override
   State<Storyup> createState() => _StoryupState();
 }
 
-class _StoryupState extends State<Storyup>
-    with SingleTickerProviderStateMixin {
+class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late List<Map<String, dynamic>> items;
 
@@ -33,17 +27,13 @@ class _StoryupState extends State<Storyup>
 
     _loadCurrentStory();
 
-    _controller = AnimationController(
-      vsync: this,
-      duration: storyDuration,
-    );
+    _controller = AnimationController(vsync: this, duration: storyDuration);
 
     _controller.addStatusListener(_onAnimationStatus);
 
     _startStory();
   }
 
-  // Mengambil daftar slide dari pengguna yang sedang dibuka.
   void _loadCurrentStory() {
     items = List<Map<String, dynamic>>.from(
       widget.stories[currentStoryIndex]['items'] as List,
@@ -52,14 +42,12 @@ class _StoryupState extends State<Storyup>
     currentIndex = 0;
   }
 
-  // Memulai timer Story.
   void _startStory() {
     if (items.isEmpty) {
       _nextUser();
       return;
     }
 
-    // Tandai Story pengguna ini sudah dilihat.
     widget.stories[currentStoryIndex]['isViewed'] = true;
 
     _controller
@@ -68,14 +56,12 @@ class _StoryupState extends State<Storyup>
       ..forward();
   }
 
-  // Otomatis lanjut ketika timer selesai.
   void _onAnimationStatus(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       _nextStory();
     }
   }
 
-  // Slide berikutnya.
   void _nextStory() {
     if (currentIndex < items.length - 1) {
       setState(() {
@@ -88,7 +74,6 @@ class _StoryupState extends State<Storyup>
     }
   }
 
-  // Berpindah ke pengguna berikutnya.
   void _nextUser() {
     if (currentStoryIndex < widget.stories.length - 1) {
       setState(() {
@@ -102,7 +87,6 @@ class _StoryupState extends State<Storyup>
     }
   }
 
-  // Slide sebelumnya.
   void _previousStory() {
     if (currentIndex > 0) {
       setState(() {
@@ -115,14 +99,12 @@ class _StoryupState extends State<Storyup>
     }
   }
 
-  // Berpindah ke pengguna sebelumnya.
   void _previousUser() {
     if (currentStoryIndex > 0) {
       setState(() {
         currentStoryIndex--;
         _loadCurrentStory();
 
-        // Mulai dari slide terakhir pengguna sebelumnya.
         currentIndex = items.length - 1;
       });
 
@@ -135,7 +117,6 @@ class _StoryupState extends State<Storyup>
     }
   }
 
-  // Progress bar setiap slide.
   Widget _buildProgressBar(int index) {
     return Expanded(
       child: Container(
@@ -164,9 +145,7 @@ class _StoryupState extends State<Storyup>
               child: FractionallySizedBox(
                 widthFactor: progress,
                 heightFactor: 1,
-                child: Container(
-                  color: Colors.white,
-                ),
+                child: Container(color: Colors.white),
               ),
             );
           },
@@ -199,7 +178,6 @@ class _StoryupState extends State<Storyup>
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
 
-        // Tap kanan dan kiri.
         onTapUp: (details) {
           final width = MediaQuery.of(context).size.width;
 
@@ -212,7 +190,6 @@ class _StoryupState extends State<Storyup>
 
         child: Stack(
           children: [
-            // Background Story.
             Positioned.fill(
               child: Container(
                 color: backgroundColor,
@@ -230,7 +207,6 @@ class _StoryupState extends State<Storyup>
               ),
             ),
 
-            // Header dan progress bar.
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -239,7 +215,6 @@ class _StoryupState extends State<Storyup>
                 ),
                 child: Column(
                   children: [
-                    // Progress bar berdasarkan jumlah slide.
                     Row(
                       children: List.generate(
                         items.length,
@@ -249,7 +224,6 @@ class _StoryupState extends State<Storyup>
 
                     const SizedBox(height: 15),
 
-                    // Informasi pengguna.
                     Row(
                       children: [
                         CircleAvatar(
@@ -281,10 +255,7 @@ class _StoryupState extends State<Storyup>
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                          ),
+                          icon: const Icon(Icons.close, color: Colors.white),
                         ),
                       ],
                     ),

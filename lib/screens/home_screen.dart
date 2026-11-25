@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
-import '../widgets/storybar.dart';
+
+import '../components/storybar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,17 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(
-              Icons.favorite_border,
-              color: Colors.black,
-            ),
+            icon: const Icon(Icons.favorite_border, color: Colors.black),
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(
-              Icons.chat_bubble_outline,
-              color: Colors.black,
-            ),
+            icon: const Icon(Icons.chat_bubble_outline, color: Colors.black),
           ),
           const SizedBox(width: 8),
         ],
@@ -51,20 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const Storybar(),
 
-          const Divider(
-            height: 1,
-            thickness: 0.5,
-            color: Color(0xFFEEEEEE),
-          ),
+          const Divider(height: 1, thickness: 0.5, color: Color(0xFFEEEEEE)),
 
           const Expanded(
             child: Center(
               child: Text(
                 'Your Feed Will Appear Here',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.grey, fontSize: 14),
               ),
             ),
           ),
