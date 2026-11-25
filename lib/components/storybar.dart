@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'storyup.dart';
 
@@ -10,6 +11,8 @@ class Storybar extends StatefulWidget {
 }
 
 class _StorybarState extends State<Storybar> {
+  final ImagePicker _picker = ImagePicker();
+
   final List<Map<String, dynamic>> stories = [
     {
       'name': 'Your Story',
@@ -80,6 +83,39 @@ class _StorybarState extends State<Storybar> {
     },
   ];
 
+  // Memilih foto dari galeri HP.
+  Future<void> pickStoryImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 85,
+      );
+
+      if (image == null || !mounted) return;
+
+      setState(() {
+        stories[0]['items'].add({
+          'type': 'image',
+          'imagePath': image.path,
+        });
+      });
+
+      // Langsung membuka Story setelah foto dipilih.
+      await openStory(sortedStories, 0);
+    } catch (e) {
+      debugPrint('Gagal memilih foto: $e');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal memilih foto dari galeri.'),
+        ),
+      );
+    }
+  }
+
+  // Mengurutkan Story yang belum dilihat ke depan.
   List<Map<String, dynamic>> get sortedStories {
     final result = List<Map<String, dynamic>>.from(stories);
 
@@ -98,6 +134,7 @@ class _StorybarState extends State<Storybar> {
     return result;
   }
 
+  // Membuka halaman Story.
   Future<void> openStory(
     List<Map<String, dynamic>> displayedStories,
     int index,
@@ -105,8 +142,10 @@ class _StorybarState extends State<Storybar> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            Storyup(stories: displayedStories, initialIndex: index),
+        builder: (context) => Storyup(
+          stories: displayedStories,
+          initialIndex: index,
+        ),
       ),
     );
 
@@ -123,7 +162,10 @@ class _StorybarState extends State<Storybar> {
       height: 112,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 8,
+        ),
         itemCount: displayedStories.length,
         itemBuilder: (context, index) {
           final story = displayedStories[index];
@@ -132,7 +174,13 @@ class _StorybarState extends State<Storybar> {
           final isViewed = story['isViewed'] as bool;
 
           return GestureDetector(
-            onTap: () => openStory(displayedStories, index),
+            onTap: () {
+              if (isMe) {
+                pickStoryImage();
+              } else {
+                openStory(displayedStories, index);
+              }
+            },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 7),
               child: Column(
@@ -145,8 +193,6 @@ class _StorybarState extends State<Storybar> {
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-
-                          // Ring warna untuk Story belum dilihat.
                           gradient: !isMe && !isViewed
                               ? const LinearGradient(
                                   colors: [
@@ -159,8 +205,6 @@ class _StorybarState extends State<Storybar> {
                                   end: Alignment.bottomLeft,
                                 )
                               : null,
-
-                          // Ring abu-abu untuk Story yang sudah dilihat.
                           border: isMe || isViewed
                               ? Border.all(
                                   color: Colors.grey.shade400,
@@ -188,6 +232,7 @@ class _StorybarState extends State<Storybar> {
                         ),
                       ),
 
+                      // Tombol tambah Story.
                       if (isMe)
                         Positioned(
                           right: 0,
@@ -198,7 +243,10 @@ class _StorybarState extends State<Storybar> {
                             decoration: BoxDecoration(
                               color: const Color(0xFF3797EF),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
                             ),
                             child: const Icon(
                               Icons.add,
@@ -209,9 +257,7 @@ class _StorybarState extends State<Storybar> {
                         ),
                     ],
                   ),
-
                   const SizedBox(height: 5),
-
                   SizedBox(
                     width: 72,
                     child: Text(

@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Facebook',
+          'Untalk',
           style: TextStyle(
             fontSize: 27,
             fontWeight: FontWeight.bold,
