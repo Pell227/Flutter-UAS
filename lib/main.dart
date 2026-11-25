@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart';
-import 'login_screen.dart';
-import 'navbar.dart';
+import 'screens/login_screen.dart';
+import 'component/navbar.dart';
 import 'component/navbarAnim.dart';
-import 'profile.dart';
+import 'screens/profile.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
