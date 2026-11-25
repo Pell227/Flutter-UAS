@@ -1,16 +1,24 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 class Storyup extends StatefulWidget {
   final List<Map<String, dynamic>> stories;
   final int initialIndex;
+  final int initialItemIndex;
 
-  const Storyup({super.key, required this.stories, required this.initialIndex});
+  const Storyup({
+    super.key,
+    required this.stories,
+    required this.initialIndex,
+    this.initialItemIndex = 0,
+  });
 
   @override
   State<Storyup> createState() => _StoryupState();
 }
 
-class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
+class _StoryupState extends State<Storyup>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late List<Map<String, dynamic>> items;
 
@@ -27,7 +35,15 @@ class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
 
     _loadCurrentStory();
 
-    _controller = AnimationController(vsync: this, duration: storyDuration);
+    currentIndex = widget.initialItemIndex.clamp(
+      0,
+      items.isEmpty ? 0 : items.length - 1,
+    );
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: storyDuration,
+    );
 
     _controller.addStatusListener(_onAnimationStatus);
 
@@ -57,7 +73,7 @@ class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
   }
 
   void _onAnimationStatus(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
+    if (status == AnimationStatus.completed && mounted) {
       _nextStory();
     }
   }
@@ -104,7 +120,6 @@ class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
       setState(() {
         currentStoryIndex--;
         _loadCurrentStory();
-
         currentIndex = items.length - 1;
       });
 
@@ -154,6 +169,57 @@ class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
     );
   }
 
+  // Menampilkan foto atau teks sesuai jenis Story.
+  Widget _buildStoryContent(Map<String, dynamic> story) {
+    if (story['type'] == 'image') {
+      final imagePath = story['imagePath'] as String?;
+
+      if (imagePath == null || imagePath.isEmpty) {
+        return const Center(
+          child: Text(
+            'Foto tidak ditemukan',
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+      }
+
+      return SizedBox.expand(
+        child: Image.file(
+          File(imagePath),
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(
+              child: Text(
+                'Gagal menampilkan foto',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    final backgroundColor =
+        story['color'] as Color? ?? Colors.blueGrey;
+
+    final storyText = story['text'] as String? ?? '';
+
+    return Container(
+      color: backgroundColor,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(24),
+      child: Text(
+        storyText,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 28,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _controller.removeStatusListener(_onAnimationStatus);
@@ -163,6 +229,15 @@ class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+      );
+    }
+
     final currentUser = widget.stories[currentStoryIndex];
 
     final username = currentUser['name'] as String;
@@ -170,14 +245,10 @@ class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
 
     final currentStory = items[currentIndex];
 
-    final backgroundColor = currentStory['color'] as Color;
-    final storyText = currentStory['text'] as String;
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
-
         onTapUp: (details) {
           final width = MediaQuery.of(context).size.width;
 
@@ -187,24 +258,10 @@ class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
             _previousStory();
           }
         },
-
         child: Stack(
           children: [
             Positioned.fill(
-              child: Container(
-                color: backgroundColor,
-                child: Center(
-                  child: Text(
-                    storyText,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
+              child: _buildStoryContent(currentStory),
             ),
 
             SafeArea(
@@ -255,7 +312,10 @@ class _StoryupState extends State<Storyup> with SingleTickerProviderStateMixin {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          icon: const Icon(Icons.close, color: Colors.white),
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),

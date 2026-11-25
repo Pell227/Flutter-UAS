@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'screens/login_screen.dart';
 import 'components/navbar.dart';
-import 'components/navbarAnim.dart';
+import 'components/navbar_anim.dart';
 import 'screens/profile.dart';
 import 'screens/home_screen.dart';
 
