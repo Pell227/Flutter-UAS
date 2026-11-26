@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../components/storybar.dart';
 
+import '../components/feed_list.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -48,12 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Divider(height: 1, thickness: 0.5, color: Color(0xFFEEEEEE)),
 
           const Expanded(
-            child: Center(
-              child: Text(
-                'Your Feed Will Appear Here',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-            ),
+            child: FeedList(),
           ),
         ],
       ),
