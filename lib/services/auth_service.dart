@@ -14,5 +14,11 @@ class AuthService {
   Future<UserCredential> signInWithGoogle() =>
       _auth.signInWithProvider(GoogleAuthProvider());
 
+  Future<UserCredential> signInWithFacebook() =>
+      _auth.signInWithProvider(FacebookAuthProvider());
+
+  Future<UserCredential> signInWithX() =>
+      _auth.signInWithProvider(TwitterAuthProvider());
+
   Future<void> logout() => _auth.signOut();
 }

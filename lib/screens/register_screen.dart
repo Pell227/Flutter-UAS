@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'birthday_picker.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../services/auth_service.dart';
+import '../birthday_picker.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -14,9 +17,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _fullNameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthService();
+
   bool _isPasswordVisible = false;
   bool _isLoading = false;
-  DateTime? _selectedBirthday; 
+  DateTime? _selectedBirthday;
 
   @override
   void dispose() {
@@ -27,20 +32,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _handleRegister() {
+  Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      debugPrint('Tanggal lahir dipilih: $_selectedBirthday');
-      Future.delayed(const Duration(seconds: 2), () {
+      try {
+        final credential = await _authService.register(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
+
+        await credential.user?.updateDisplayName(
+          _fullNameController.text.trim(),
+        );
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Akun berhasil dibuat!')),
+        );
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+        String pesan = 'Pendaftaran gagal. Coba lagi.';
+        if (e.code == 'email-already-in-use') {
+          pesan = 'Email sudah terdaftar. Gunakan email lain atau masuk.';
+        } else if (e.code == 'invalid-email') {
+          pesan = 'Format email tidak valid (Firebase memerlukan alamat email).';
+        } else if (e.code == 'weak-password') {
+          pesan = 'Kata sandi terlalu lemah (minimal 6 karakter).';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(pesan)),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Terjadi kesalahan: $e')),
+        );
+      } finally {
         if (mounted) {
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Akun berhasil dibuat!')),
-          );
-          // Kembali ke halaman login setelah berhasil mendaftar
-          Navigator.pop(context);
         }
-      });
+      }
     }
   }
 
@@ -61,7 +93,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
           filled: true,
           fillColor: Colors.grey.shade100,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(color: Colors.grey.shade300),
@@ -77,7 +112,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           suffixIcon: isPassword
               ? IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                     color: Colors.grey.shade600,
                     size: 20,
                   ),
@@ -142,7 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   _buildTextField(
                     controller: _emailController,
-                    hintText: 'Email atau Nomor HP',
+                    hintText: 'Email',
                     keyboardType: TextInputType.emailAddress,
                   ),
                   _buildTextField(
@@ -159,7 +196,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     isPassword: true,
                   ),
 
-                  // 3. Panggil komponen BirthdayPicker di sini
                   BirthdayPicker(
                     onDateSelected: (date) {
                       setState(() {
@@ -206,7 +242,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       Text(
                         'Sudah punya akun? ',
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 14,
+                        ),
                       ),
                       GestureDetector(
                         onTap: () {

@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 class SocialLogin extends StatelessWidget {
   final VoidCallback onGooglePressed;
   final VoidCallback onFacebookPressed;
-  final VoidCallback onApplePressed;
   final VoidCallback onXPressed;
 
   const SocialLogin({
     super.key,
     required this.onGooglePressed,
     required this.onFacebookPressed,
-    required this.onApplePressed,
     required this.onXPressed,
   });
 
@@ -96,17 +94,6 @@ class SocialLogin extends StatelessWidget {
           ),
           label: 'Masuk dengan Facebook',
           textColor: const Color(0xFF3797EF),
-        ),
-        const SizedBox(height: 10),
-
-        _buildSocialButton(
-          onTap: onApplePressed,
-          icon: const Icon(
-            Icons.apple,
-            color: Colors.black,
-            size: 24,
-          ),
-          label: 'Masuk dengan Apple',
         ),
         const SizedBox(height: 10),
 

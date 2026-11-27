@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+import '../services/auth_service.dart';
 import 'register_screen.dart';
-import 'forgot_password.dart';
-import 'social_login.dart';
-
+import '../forgot_password.dart';
+import '../social_login.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthService();
+
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
@@ -26,24 +29,76 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      Future.delayed(const Duration(seconds: 2), () {
+      try {
+        await _authService.login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login berhasil!')),
+        );
+        Navigator.pushReplacementNamed(context, '/home');
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+        String pesan = 'Login gagal. Periksa email dan kata sandi.';
+        if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
+          pesan = 'Email atau kata sandi salah.';
+        } else if (e.code == 'invalid-email') {
+          pesan = 'Format email tidak valid.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(pesan)),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Terjadi kesalahan: $e')),
+        );
+      } finally {
         if (mounted) {
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Login berhasil!')));
-          Navigator.pushReplacementNamed(context, '/home');
         }
-      });
+      }
     }
   }
 
-  void _handleSocialLogin(String provider) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Melanjutkan login dengan $provider...')),
-    );
+  Future<void> _handleSocialLogin(String provider) async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+    try {
+      if (provider == 'Google') {
+        await _authService.signInWithGoogle();
+      } else if (provider == 'Facebook') {
+        await _authService.signInWithFacebook();
+      } else if (provider == 'X') {
+        await _authService.signInWithX();
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Berhasil masuk dengan $provider!')),
+      );
+      Navigator.pushReplacementNamed(context, '/home');
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal login $provider: ${e.message}')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login $provider dibatalkan atau gagal.')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -218,11 +273,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   const SizedBox(height: 24),
-                  
+
                   SocialLogin(
                     onGooglePressed: () => _handleSocialLogin('Google'),
                     onFacebookPressed: () => _handleSocialLogin('Facebook'),
-                    onApplePressed: () => _handleSocialLogin('Apple'),
                     onXPressed: () => _handleSocialLogin('X'),
                   ),
 
