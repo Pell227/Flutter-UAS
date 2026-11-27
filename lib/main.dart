@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart';
-import 'login_screen.dart';
-import 'navbar.dart';
-import 'component/navbarAnim.dart';
-import 'profile.dart';
+import 'screens/login_screen.dart';
+import 'components/navbar.dart';
+import 'components/navbarAnim.dart';
+import 'screens/profile.dart';
+import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +47,7 @@ class _MainShellState extends State<MainShell> {
   final int _notifications = 12;
 
   final List<Widget> _pages = const [
-    Center(child: Text('Home feed')),
+    HomeScreen(),
     Center(child: Text('Friends')),
     Center(child: Text('Search')),
     Center(child: Text('Reels')),
