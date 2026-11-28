@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'services/auth_service.dart';
+import 'components/gradient_button.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -10,6 +14,7 @@ class ForgotPassword extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPassword> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _authService = AuthService();
   bool _isLoading = false;
 
   @override
@@ -18,22 +23,42 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     super.dispose();
   }
 
-  void _handleResetPassword() {
+  Future<void> _handleResetPassword() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      Future.delayed(const Duration(seconds: 2), () {
+      try {
+        await _authService.resetPassword(_emailController.text.trim());
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Tautan pemulihan telah dikirim ke ${_emailController.text.trim()}',
+            ),
+          ),
+        );
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
+        String pesan = 'Gagal mengirim tautan pemulihan.';
+        if (e.code == 'user-not-found') {
+          pesan = 'Email tidak terdaftar.';
+        } else if (e.code == 'invalid-email') {
+          pesan = 'Format email tidak valid.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(pesan)),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Terjadi kesalahan: $e')),
+        );
+      } finally {
         if (mounted) {
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Tautan pemulihan telah dikirim ke ${_emailController.text.trim()}',
-              ),
-            ),
-          );
-          Navigator.pop(context);
         }
-      });
+      }
     }
   }
 
@@ -82,7 +107,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Masukkan username, email, atau nomor HP Anda dan kami akan mengirimkan tautan untuk kembali ke akun Anda.',
+                    'Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi akun Anda.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
@@ -95,7 +120,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      hintText: 'Username, email, atau nomor HP',
+                      hintText: 'Email',
                       hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                       filled: true,
                       fillColor: Colors.grey.shade100,
@@ -113,44 +138,21 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey.shade500),
+                        borderSide: const BorderSide(color: Color(0xFFAB1FCA)),
                       ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Masukkan username, email, atau nomor HP';
+                        return 'Masukkan alamat email';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _handleResetPassword,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3797EF),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text(
-                            'Kirim Tautan Masuk',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
+                  GradientButton(
+                    text: 'Kirim Tautan Masuk',
+                    isLoading: _isLoading,
+                    onPressed: _handleResetPassword,
                   ),
                   const SizedBox(height: 24),
                   GestureDetector(
@@ -159,7 +161,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       'Kembali ke halaman Masuk',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Color(0xFF3797EF),
+                        color: Color(0xFFAB1FCA),
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),

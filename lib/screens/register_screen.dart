@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../services/auth_service.dart';
+import '../components/gradient_button.dart';
 import '../birthday_picker.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -107,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.grey.shade500),
+            borderSide: const BorderSide(color: Color(0xFFAB1FCA)),
           ),
           suffixIcon: isPassword
               ? IconButton(
@@ -154,13 +155,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    'SocialApp',
+                    'UNTALK',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Billabong',
                       fontSize: 42,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                      letterSpacing: 1.5,
                       color: Colors.black,
                     ),
                   ),
@@ -206,33 +207,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   const SizedBox(height: 16),
 
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _handleRegister,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3797EF),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text(
-                            'Daftar',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
+                  GradientButton(
+                    text: 'Daftar',
+                    isLoading: _isLoading,
+                    onPressed: _handleRegister,
                   ),
 
                   const SizedBox(height: 32),
@@ -254,7 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: const Text(
                           'Masuk',
                           style: TextStyle(
-                            color: Color(0xFF3797EF),
+                            color: Color(0xFFAB1FCA),
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),

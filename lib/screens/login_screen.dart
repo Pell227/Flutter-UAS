@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../services/auth_service.dart';
+import '../components/gradient_button.dart';
 import 'register_screen.dart';
 import '../forgot_password.dart';
 import '../social_login.dart';
@@ -116,13 +117,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    'SocialApp',
+                    'UNTALK',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Billabong',
                       fontSize: 42,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                      letterSpacing: 1.5,
                       color: Colors.black,
                     ),
                   ),
@@ -132,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      hintText: 'Username, email, atau nomor HP',
+                      hintText: 'Email',
                       hintStyle: TextStyle(
                         color: Colors.grey.shade400,
                         fontSize: 14,
@@ -153,12 +154,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey.shade500),
+                        borderSide: const BorderSide(color: Color(0xFFAB1FCA)),
                       ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Masukkan username atau email';
+                        return 'Masukkan email';
                       }
                       return null;
                     },
@@ -190,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey.shade500),
+                        borderSide: const BorderSide(color: Color(0xFFAB1FCA)),
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -219,7 +220,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Tombol navigasi ke ForgotPassword
                   Align(
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
@@ -234,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text(
                         'Lupa kata sandi?',
                         style: TextStyle(
-                          color: Color(0xFF3797EF),
+                          color: Color(0xFFAB1FCA),
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
@@ -243,33 +243,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3797EF),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text(
-                            'Masuk',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
+                  GradientButton(
+                    text: 'Masuk',
+                    isLoading: _isLoading,
+                    onPressed: _handleLogin,
                   ),
 
                   const SizedBox(height: 24),
@@ -304,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: const Text(
                           'Buat Akun',
                           style: TextStyle(
-                            color: Color(0xFF3797EF),
+                            color: Color(0xFFAB1FCA),
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),

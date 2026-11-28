@@ -20,5 +20,29 @@ class AuthService {
   Future<UserCredential> signInWithX() =>
       _auth.signInWithProvider(TwitterAuthProvider());
 
+  // Tambahkan di sini (sebelum logout)
+  Future<void> resetPassword(String email) =>
+      _auth.sendPasswordResetEmail(email: email);
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null || user.email == null) {
+      throw FirebaseAuthException(
+        code: 'no-current-user',
+        message: 'Akun ini tidak menggunakan login email/password.',
+      );
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: currentPassword,
+    );
+    await user.reauthenticateWithCredential(credential);
+    await user.updatePassword(newPassword);
+  }
+
   Future<void> logout() => _auth.signOut();
 }
